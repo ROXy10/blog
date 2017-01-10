@@ -9,12 +9,8 @@ from django.utils.safestring import mark_safe
 from django.utils.text import slugify
 
 from markdown_deux import markdown
-# Create your models here.
-# MVC MODEL VIEW CONTROLLER
+from comments.models import Comment
 
-
-#Post.objects.all()
-#Post.objects.create(user=user, title="Some time")
 
 class PostManager(models.Manager):
     def active(self, *args, **kwargs):
@@ -35,6 +31,7 @@ def upload_location(instance, filename):
     We add 1 to it, so we get what should be the same id as the the post we are creating.
     """
     return "%s/%s" %(new_id, filename)
+
 
 class Post(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, default=1)
@@ -72,6 +69,11 @@ class Post(models.Model):
         markdown_safe = markdown(content)
         return mark_safe(markdown_safe)
 
+    @property
+    def comments(self):
+        query_set = Comment.objects.filter_by_instance(self)
+        return query_set
+
 def create_slug(instance, new_slug=None):
     slug = slugify(instance.title)
     if new_slug is not None:
@@ -87,7 +89,6 @@ def create_slug(instance, new_slug=None):
 def pre_save_post_receiver(sender, instance, *args, **kwargs):
     if not instance.slug:
         instance.slug = create_slug(instance)
-
 
 
 pre_save.connect(pre_save_post_receiver, sender=Post)

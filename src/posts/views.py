@@ -15,6 +15,7 @@ from django.http import HttpResponse, HttpResponseRedirect, Http404
 from django.shortcuts import render, get_object_or_404, redirect
 from django.utils import timezone
 
+from comments.models import Comment
 from .forms import PostForm
 from .models import Post
 
@@ -43,10 +44,13 @@ def post_detail(request, slug=None):
         if not request.user.is_staff or not request.user.is_superuser:
             raise Http404
     share_string = quote_plus(instance.content)
+    comments = instance.comments
+
     context = {
         "title": instance.title,
         "instance": instance,
         "share_string": share_string,
+        "comments": comments,
     }
     return render(request, "post_detail.html", context)
 
