@@ -2,6 +2,7 @@ from __future__ import unicode_literals
 
 from django.conf import settings
 from django.core.urlresolvers import reverse
+from django.contrib.contenttypes.models import ContentType
 from django.db import models
 from django.db.models.signals import pre_save
 from django.utils import timezone
@@ -14,13 +15,10 @@ from comments.models import Comment
 
 class PostManager(models.Manager):
     def active(self, *args, **kwargs):
-        # Post.objects.all() = super(PostManager, self).all()
         return super(PostManager, self).filter(draft=False).filter(publish__lte=timezone.now())
 
 
 def upload_location(instance, filename):
-    #filebase, extension = filename.split(".")
-    #return "%s/%s.%s" %(instance.id, instance.id, extension)
     PostModel = instance.__class__
     new_id = PostModel.objects.order_by("id").last().id + 1
     """
@@ -73,6 +71,11 @@ class Post(models.Model):
     def comments(self):
         query_set = Comment.objects.filter_by_instance(self)
         return query_set
+
+    @property
+    def get_content_type(self):
+        content_type = ContentType.objects.get_for_model(self.__class__)
+        return content_type
 
 def create_slug(instance, new_slug=None):
     slug = slugify(instance.title)

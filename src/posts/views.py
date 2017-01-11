@@ -10,11 +10,13 @@ except:
 
 from django.contrib import messages
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+from django.contrib.contenttypes.models import ContentType
 from django.db.models import Q
 from django.http import HttpResponse, HttpResponseRedirect, Http404
 from django.shortcuts import render, get_object_or_404, redirect
 from django.utils import timezone
 
+from comments.forms import CommetnForm
 from comments.models import Comment
 from .forms import PostForm
 from .models import Post
@@ -44,13 +46,31 @@ def post_detail(request, slug=None):
         if not request.user.is_staff or not request.user.is_superuser:
             raise Http404
     share_string = quote_plus(instance.content)
-    comments = instance.comments
 
+    initial_data = {
+        "content_type": instance.get_content_type,
+        "object_id": instance.id
+    }
+    form = CommetnForm(request.POST or None, initial=initial_data)
+    if form.is_valid():
+        c_type = form.cleaned_data.get("content_type")
+        content_type = ContentType.objects.get(model=c_type)
+        object_id = form.cleaned_data.get("object_id")
+        content_data = form.cleaned_data.get("content")
+        new_coment, created = Comment.objects.get_or_create(
+            user = request.user,
+            content_type = content_type,
+            object_id = object_id,
+            content = content_data,
+        )
+
+    comments = instance.comments
     context = {
         "title": instance.title,
         "instance": instance,
         "share_string": share_string,
         "comments": comments,
+        "comment_form": form,
     }
     return render(request, "post_detail.html", context)
 
