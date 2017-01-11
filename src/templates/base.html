@@ -46,10 +46,10 @@
             var content = $(this).text();
             var markedContent = marked(content);
             $(this).html(markedContent)
-        })
+        });
         $('.post-detail-item img').each(function () {
             $(this).addClass('img-responsive')
-        })
+        });
 
         //preview content
         var contentInput = $('#id_content');
@@ -66,7 +66,7 @@
         contentInput.keyup(function () {
             var newContent = $(this).val();
             setContent(newContent);
-        })
+        });
 
         //preview title
         var titleInput = $('#id_title');
@@ -79,7 +79,12 @@
         titleInput.keyup(function () {
             var newTitle = $(this).val();
             setTitle(newTitle);
-        })
+        });
+
+        $('.comment-reply-btn').click(function (event) {
+            event.preventDefault();
+            $(this).parent().next('.comment-reply').fadeToggle();
+        });
     })
 </script>
 </body>
