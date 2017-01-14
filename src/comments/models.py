@@ -1,8 +1,8 @@
 from django.conf import settings
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
+from django.core.urlresolvers import reverse
 from django.db import models
-
 
 
 class CommentManager(models.Manager):
@@ -16,6 +16,7 @@ class CommentManager(models.Manager):
         obj_id = instance.id
         query_set = super(CommentManager, self).filter(content_type=content_type, object_id=obj_id).filter(parent=None)
         return query_set
+
 
 class Comment(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, default=1)
@@ -37,6 +38,9 @@ class Comment(models.Model):
 
     def __str__(self):
         return str(self.user.username)
+
+    def get_absolute_url(self):
+        return reverse('comments:thread', kwargs={'id': self.id})
 
     def children(self):
         return Comment.objects.filter(parent=self)
