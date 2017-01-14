@@ -20,7 +20,6 @@ from comments.forms import CommetnForm
 from comments.models import Comment
 from .forms import PostForm
 from .models import Post
-from .utils import get_read_time
 
 
 def post_create(request):
@@ -48,7 +47,7 @@ def post_detail(request, slug=None):
             raise Http404
     share_string = quote_plus(instance.content)
 
-    
+
     initial_data = {
         "content_type": instance.get_content_type,
         "object_id": instance.id
