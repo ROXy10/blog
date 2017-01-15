@@ -12,9 +12,9 @@
     <div class='col-sm-6 col-sm-offset-3'>
         <hr/>
         <p>{{ comment.content }}</p>
-        <footer>via {{ comment.user }} | {{ comment.timestamp|timesince }} ago |
+        <footer>via {{ comment.user }} | {{ comment.timestamp|timesince }} ago
             {% if comment.children.count > 0 %}{{ comment.children.count }} Comment
-                {% if comment.children.count > 1 %}s{% endif %}{% endif %}
+                {% if comment.children.count > 1 %}s{% endif %}{% endif %}{% if request.user == comment.user %} | <a href="{{ comment.get_delete_url }}">Delete</a>{% endif %}
         </footer>
         <hr/>
         <div>
@@ -22,7 +22,7 @@
                 <blockquote>
                     <p>{{ child_coment.content }}</p>
                     <footer>via {{ child_coment.user }} | {{ child_coment.timestamp|timesince }}
-                        ago
+                        ago{% if request.user == comment.user %} | <a href="{{ child_coment.get_delete_url }}">Delete</a>{% endif %}
                     </footer>
                 </blockquote>
             {% endfor %}
