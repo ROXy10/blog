@@ -8,15 +8,12 @@ from .models import Comment
 
 
 def comment_delete(request, id):
-    # obj = Comment.objects.get(id=id)
     try:
         obj = Comment.objects.get(id=id)
     except:
         raise Http404
 
     if obj.user != request.user:
-        # messages.success(request, "You do not have permission to view this")
-        # raise Http404
         response = HttpResponse("You do not have permission to view this")
         response.status_code = 403
         return response
