@@ -2,11 +2,11 @@ h1 {
     color: #777777;
 }
 
-.wmd-panel {
-    margin-left: 0 !important;
-    margin-right: 0 !important;
+.wmd-panel{
+    margin-right: 0px !important;
+    margin-left: 0px !important;
 }
 
-/*.comment-reply {*/
-    /*display: none;*/
-/*}*/
+.comment-reply{
+    display:none;
+}
